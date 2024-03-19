@@ -45,7 +45,7 @@ def build_graph():
         edges.append((vertex1, vertex2))
 
     nodes = {label: Node(label) for label in vertices}
-
+    print(nodes)
     for edge in edges:
         nodes[edge[0]].children.append(nodes[edge[1]])
         nodes[edge[1]].children.append(nodes[edge[0]])

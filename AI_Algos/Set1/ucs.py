@@ -17,13 +17,13 @@ def uniform_cost_search(root, goal):
         current_cost, current_node = heapq.heappop(priority_queue)
 
         if current_node.value == goal:
-            return True, current_node.cost  # Goal found
+            return True, current_cost  # Goal found
 
         if current_node.value not in visited:
             visited.add(current_node.value)
 
             for child, edge_cost in current_node.children:
-                heapq.heappush(priority_queue, (current_node.cost + edge_cost, child))
+                heapq.heappush(priority_queue, (current_cost + edge_cost, child))
 
     return False, None  # Goal not found
 

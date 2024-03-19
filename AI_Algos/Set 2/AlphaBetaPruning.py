@@ -47,6 +47,6 @@ def minimax(depth, nodeIndex, maximizingPlayer,
 # Driver Code 
 if __name__ == "__main__": 
 
-	values = [3, 5, 6, 9, 1, 2, 0, -1] 
+	values = [3, 5, 2, 9, 12, 5, 23, 23] 
 	print("The optimal value is :", minimax(0, 0, True, values, MIN, MAX)) 
 	
