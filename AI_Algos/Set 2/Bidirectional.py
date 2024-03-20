@@ -1,150 +1,96 @@
-class AdjacentNode:
-	
-	def __init__(self, vertex):
-		
-		self.vertex = vertex
-		self.next = None
-		
-        
-class BidirectionalSearch:
-	
-	def __init__(self, vertices):
-		self.vertices = vertices
-		self.graph = [None] * self.vertices
-		self.src_queue = list()
-		self.dest_queue = list()
+class Node:
+    def __init__(self, vertex):
+        self.vertex = vertex
+        self.next = None
 
-		self.src_visited = [False] * self.vertices
-		self.dest_visited = [False] * self.vertices
-		
-		self.src_parent = [None] * self.vertices
-		self.dest_parent = [None] * self.vertices
-		
-	def add_edge(self, src, dest):
-		
-		node = AdjacentNode(dest)
-		node.next = self.graph[src]
-		self.graph[src] = node
-		node = AdjacentNode(src)
-		node.next = self.graph[dest]
-		self.graph[dest] = node
-		
-	def bfs(self, direction = 'forward'):
-		
-		if direction == 'forward':
-			
-			current = self.src_queue.pop(0)
-			connected_node = self.graph[current]
-			
-			while connected_node:
-				vertex = connected_node.vertex
-				
-				if not self.src_visited[vertex]:
-					self.src_queue.append(vertex)
-					self.src_visited[vertex] = True
-					self.src_parent[vertex] = current
-					
-				connected_node = connected_node.next
-		else:
-			
-			current = self.dest_queue.pop(0)
-			connected_node = self.graph[current]
-			
-			while connected_node:
-				vertex = connected_node.vertex
-				
-				if not self.dest_visited[vertex]:
-					self.dest_queue.append(vertex)
-					self.dest_visited[vertex] = True
-					self.dest_parent[vertex] = current
-					
-				connected_node = connected_node.next
-				 
-	def is_intersecting(self):
-		
-		for i in range(self.vertices):
-			if (self.src_visited[i] and
-				self.dest_visited[i]):
-				return i
-				
-		return -1
-	
-	def print_path(self, intersecting_node, 
-				src, dest):
-						
-		path = list()
-		path.append(intersecting_node)
-		i = intersecting_node
-		
-		while i != src:
-			path.append(self.src_parent[i])
-			i = self.src_parent[i]
-			
-		path = path[::-1]
-		i = intersecting_node
-		
-		while i != dest:
-			path.append(self.dest_parent[i])
-			i = self.dest_parent[i]
-			
-		print("*****Path*****")
-		path = list(map(str, path))
-		
-		print(' '.join(path))
+class Graph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.graph = [None] * self.vertices
 
-	def bidirectional_search(self, src, dest):
-		
-		self.src_queue.append(src)
-		self.src_visited[src] = True
-		self.src_parent[src] = -1
-		self.dest_queue.append(dest)
-		self.dest_visited[dest] = True
-		self.dest_parent[dest] = -1
+    def add_edge(self, src, dest):
+        node = Node(dest)
+        node.next = self.graph[src]
+        self.graph[src] = node
 
-		while self.src_queue and self.dest_queue:
-			
-			self.bfs(direction = 'forward')
-			self.bfs(direction = 'backward')
+def bidirectional_search(graph, src, dest):
+    src_visited = [False] * graph.vertices
+    dest_visited = [False] * graph.vertices
+    src_queue = [src]
+    dest_queue = [dest]
+    src_parent = [-1] * graph.vertices
+    dest_parent = [-1] * graph.vertices
 
-			intersecting_node = self.is_intersecting()
-			if intersecting_node != -1:
-				print(f"Path exists between {src} and {dest}")
-				print(f"Intersection at : {intersecting_node}")
-				self.print_path(intersecting_node, 
-								src, dest)
-				exit(0)
-		return -1
+    while src_queue and dest_queue:
+        current_src = src_queue.pop(0)
+        current_dest = dest_queue.pop(0)
 
-# Driver code
+        src_visited[current_src] = True
+        dest_visited[current_dest] = True
+
+        src_node = graph.graph[current_src]
+        while src_node:
+            if not src_visited[src_node.vertex]:
+                src_queue.append(src_node.vertex)
+                src_visited[src_node.vertex] = True
+                src_parent[src_node.vertex] = current_src
+            src_node = src_node.next
+
+        dest_node = graph.graph[current_dest]
+        while dest_node:
+            if not dest_visited[dest_node.vertex]:
+                dest_queue.append(dest_node.vertex)
+                dest_visited[dest_node.vertex] = True
+                dest_parent[dest_node.vertex] = current_dest
+            dest_node = dest_node.next
+
+        intersecting_node = is_intersecting(src_visited, dest_visited)
+        if intersecting_node != -1:
+            print(f"Path exists between {src} and {dest}")
+            print(f"Intersection at: {intersecting_node}")
+            print_path(intersecting_node, src_parent, dest_parent, src, dest)
+            return
+    print(f"Path does not exist between {src} and {dest}")
+
+def is_intersecting(src_visited, dest_visited):
+    for i in range(len(src_visited)):
+        if src_visited[i] and dest_visited[i]:
+            return i
+    return -1
+
+def print_path(intersecting_node, src_parent, dest_parent, src, dest):
+    path = []
+    node = intersecting_node
+    while node != -1:
+        path.append(node)
+        node = src_parent[node]
+    path.reverse()
+    node = dest_parent[intersecting_node]
+    while node != -1:
+        path.append(node)
+        node = dest_parent[node]
+    print("*****Path*****")
+    print(' '.join(map(str, path)))
+
 if __name__ == '__main__':
-	
-	
-	n = 15
-	
-	
-	src = 0
-	
-	dest = 14
-	
-	# Create a graph
-	graph = BidirectionalSearch(n)
-	graph.add_edge(0, 4)
-	graph.add_edge(1, 4)
-	graph.add_edge(2, 5)
-	graph.add_edge(3, 5)
-	graph.add_edge(4, 6)
-	graph.add_edge(5, 6)
-	graph.add_edge(6, 7)
-	graph.add_edge(7, 8)
-	graph.add_edge(8, 9)
-	graph.add_edge(8, 10)
-	graph.add_edge(9, 11)
-	graph.add_edge(9, 12)
-	graph.add_edge(10, 13)
-	graph.add_edge(10, 14)
-	
-	out = graph.bidirectional_search(src, dest)
-	
-	if out == -1:
-		print(f"Path does not exist between {src} and {dest}")
+    n = 15
+    src = 0
+    dest = 14
+    graph = Graph(n)
+    graph.add_edge(0, 4)
+    graph.add_edge(1, 4)
+    graph.add_edge(2, 5)
+    graph.add_edge(3, 5)
+    graph.add_edge(4, 6)
+    graph.add_edge(5, 6)
+    graph.add_edge(6, 7)
+    graph.add_edge(7, 8)
+    graph.add_edge(8, 9)
+    graph.add_edge(8, 10)
+    graph.add_edge(9, 11)
+    graph.add_edge(9, 12)
+    graph.add_edge(10, 13)
+    graph.add_edge(10, 14)
+    bidirectional_search(graph, src, dest)
+
 

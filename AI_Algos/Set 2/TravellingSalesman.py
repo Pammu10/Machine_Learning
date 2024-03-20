@@ -16,7 +16,7 @@ def tsp(cities, start_city):
         total_cost += euclidean_distance(path[-1], nearest_neighbor)
         path.append(nearest_neighbor)
         unvisited_cities.remove(nearest_neighbor)
-
+        
     total_cost += euclidean_distance(path[-1], start_city)  # Returning to the start city
     return path, total_cost
 

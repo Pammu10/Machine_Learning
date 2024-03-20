@@ -1,36 +1,38 @@
-from queue import PriorityQueue
+import heapq
+
+def heuristic(node, goal):
+    return abs(node - goal)
+
+
+def best_first_search(start, goal, v):
+    visited = [False] * v
+    node_list = []
+    heapq.heappush(node_list, (0, start))
+    visited[start] = True
+
+    while node_list:
+        current_cost, current_node = heapq.heappop(node_list)
+        print(current_node, end=" ")
+        if current_node == goal:
+            break
+       
+        for v, c in graph[current_node]:
+            if visited[v] == False:
+                visited[v] = True
+                heapq.heappush(node_list, (c, v))
+        
+    print()
+
+start = 0
+goal = 9
 v = 14
-graph = [[] for i in range(v)]
-
-# Function For Implementing Best First Search
-# Gives output path having lowest cost
+graph = [[] for _ in range(v)]
 
 
-def best_first_search(actual_Src, target, n):
-	visited = [False] * n
-	pq = PriorityQueue()
-	pq.put((0, actual_Src))
-	visited[actual_Src] = True
-	
-	while pq.empty() == False:
-		u = pq.get()[1]
-		# Displaying the path having lowest cost
-		print(u, end=" ")
-		if u == target:
-			break
+def addedge(node1, node2, cost):
+    graph[node1].append((node2, cost))
+    graph[node2].append((node1, cost))
 
-		for v, c in graph[u]:
-			if visited[v] == False:
-				visited[v] = True
-				pq.put((c, v))
-	print()
-
-# Function for adding edges to graph
-
-
-def addedge(x, y, cost):
-	graph[x].append((y, cost))
-	graph[y].append((x, cost))
 
 addedge(0, 1, 3)
 addedge(0, 2, 6)
@@ -46,8 +48,4 @@ addedge(9, 11, 1)
 addedge(9, 12, 10)
 addedge(9, 13, 2)
 
-source = 0
-target = 9
-best_first_search(source, target, v)
-
-# 0 1 3 2 8 9 
+best_first_search(start, goal, v)

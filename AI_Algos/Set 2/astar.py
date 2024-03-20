@@ -1,5 +1,4 @@
 import heapq
-from collections import defaultdict, deque
 
 def heuristic(node, goal):
     return abs(node - goal)
